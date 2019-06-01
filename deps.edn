@@ -11,6 +11,7 @@
                  :extra-paths ["src" "target" "test"]}
            :dev {:main-opts ["-m" "figwheel.main" "-b" "dev" "-r"]}
            :build {:main-opts ["-m" "cljs.main" "-O" "advanced"
+                               "-co" "prod.cljs.edn"
                                "-d" "out" "-c" "clj-kondo.web"]}
            #_:test #_{:extra-deps {etaoin {:mvn/version "0.3.2"}
                                org.jsoup/jsoup {:mvn/version "1.11.3"}

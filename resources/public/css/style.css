@@ -17,6 +17,13 @@ body {
   padding-bottom: 4rem;
 }
 
+.buttons {
+  margin: 5px;
+}
+.buttons .btn {
+  margin: 2px;
+}
+
 .footer {
   position: absolute;
   padding: 1rem;
@@ -28,3 +35,7 @@ body {
 
 /* end footer always at bottom */
 
+.CodeMirror {
+  border: 1px solid #eee;
+  height: auto;
+}

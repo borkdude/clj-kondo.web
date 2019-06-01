@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+cd resources/public && CLJ_KONDO_PATH=$(which clj-kondo) CLJ_KONDO_DEV=true php -S localhost:8080

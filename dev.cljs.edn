@@ -1,4 +1,5 @@
 ^{:watch-dirs ["src"]
   :css-dirs ["resources/public/css"]
   :auto-testing false}
-{:main clj-kondo.web}
+{:main clj-kondo.web
+ :closure-defines {clj-kondo.web/server "http://localhost:8080/server.php"}}
