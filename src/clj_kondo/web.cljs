@@ -1,6 +1,7 @@
 (ns ^:figwheel-hooks clj-kondo.web
   (:require
    [ajax.core :as ajax]
+   [applied-science.js-interop :as j]
    [cljsjs.codemirror]
    [cljsjs.codemirror.addon.lint.lint]
    [cljsjs.codemirror.mode.clojure]
@@ -100,14 +101,14 @@
 (defn controls []
   [:div.buttons
    [:button.btn.btn-sm.btn-outline-primary
-    {:on-click #(.performLint @editor-ref)}
+    {:on-click #(j/call @editor-ref :performLint)}
     "lint!"]
    [:button.btn.btn-sm.btn-outline-primary
     {:on-click #(.setValue @editor-ref "")}
     "clear!"]
    [:button.btn.btn-sm.btn-outline-primary
     {:on-click #(do (.setValue @editor-ref initial-code)
-                    (.performLint @editor-ref))}
+                    (j/call @editor-ref :performLint))}
     "reset!"]])
 
 (defn app []
