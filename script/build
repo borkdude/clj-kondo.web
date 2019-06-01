@@ -1,0 +1,31 @@
+#!/bin/bash
+
+## https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+set -Eeo pipefail
+
+commit=$(git rev-parse --short=16 HEAD)
+
+if [ "$PREVIOUS" != "true" ]; then
+    echo "Building clj-kondo.web $commit"
+    rm -rf out
+    clojure -A:build
+fi
+
+echo "Preparing deploy folder"
+rm -rf /tmp/clj-kondo.web
+mkdir -p /tmp/clj-kondo.web/js
+cp out/main.js "/tmp/clj-kondo.web/js/main-$commit.js"
+mkdir -p /tmp/clj-kondo.web/css
+cp resources/public/css/style.css "/tmp/clj-kondo.web/css/style-$commit.css"
+cp resources/public/prod.html /tmp/clj-kondo.web/index.html
+sed -i.bak "s/\$COMMIT/$commit/g" /tmp/clj-kondo.web/index.html
+rm "/tmp/clj-kondo.web/index.html.bak"
+
+if [ "$DEPLOY" = "true" ]; then
+    echo "Copying to server"
+    ssh borkdude@michielborkent.nl "rm -rf clj-kondo.web; mkdir -p clj-kondo.web"
+    scp -r /tmp/clj-kondo.web/* borkdude@eetvoorjeleven.nu:clj-kondo.web
+elif [ "$PREVIEW" = "true" ]; then
+    echo "Previewing app"
+    cd /tmp/clj-kondo.web && python -m SimpleHTTPServer
+fi
