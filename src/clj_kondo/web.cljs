@@ -65,15 +65,14 @@
 
 ")
 
-(defonce app-state (r/atom {:code initial-code}))
-(defonce editors (atom {}))
+(defonce editor-ref (atom nil))
 
 (defn editor [id path]
   (r/create-class
    {:render (fn [] [:textarea
                     {:type "text"
                      :id id
-                     :default-value (get-in @app-state path)
+                     :default-value initial-code
                      :auto-complete "off"}])
     :component-did-mount
     (fn [this]
@@ -87,32 +86,28 @@
             cm (.fromTextArea js/CodeMirror
                               (r/dom-node this)
                               opts)]
-        (.on cm "change"
-             (fn [x]
-               (let [v (.getValue x)]
-                 (swap! app-state assoc-in path v))))
         (js/parinferCodeMirror.init cm)
         (.removeKeyMap cm)
         (.setOption cm "extraKeys" #js {:Shift-Tab false
                                         :Tab false})
-        #_(def x cm)
-        (swap! editors assoc-in path cm)))
+        (reset! editor-ref cm)))
     :component-will-unmount
     (fn []
-      (let [cm (get-in @editors path)]
+      (let [cm @editor-ref]
         ;; toTextArea will destroy and clean up cm
         (.toTextArea cm)))}))
 
 (defn controls []
   [:div.buttons
    [:button.btn.btn-sm.btn-outline-primary
-    {:on-click #(.performLint (get-in @editors [:code]))}
+    {:on-click #(.performLint @editor-ref)}
     "lint!"]
    [:button.btn.btn-sm.btn-outline-primary
-    {:on-click #(.setValue (get-in @editors [:code]) "")}
+    {:on-click #(.setValue @editor-ref "")}
     "clear!"]
    [:button.btn.btn-sm.btn-outline-primary
-    {:on-click #(.setValue (get-in @editors [:code]) initial-code)}
+    {:on-click #(do (.setValue @editor-ref initial-code)
+                    (.performLint @editor-ref))}
     "reset!"]])
 
 (defn app []
@@ -154,7 +149,7 @@
                                      row (dec row)
                                      col (dec col)
                                      start-pos (js/CodeMirror.Pos row col)
-                                     token (.getTokenAt (get-in @editors [:code])
+                                     token (.getTokenAt @editor-ref
                                                         #js {:line row
                                                              :ch (inc col)} true)
                                      end-pos (js/CodeMirror.Pos row (.-end token))]
