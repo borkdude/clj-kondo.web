@@ -3,6 +3,7 @@
    [ajax.core :as ajax]
    [applied-science.js-interop :as j]
    [cljsjs.codemirror]
+   [cljsjs.codemirror.addon.edit.matchbrackets]
    [cljsjs.codemirror.addon.lint.lint]
    [cljsjs.codemirror.mode.clojure]
    [cljsjs.parinfer]
@@ -34,6 +35,10 @@
         ;; also wrong:
         (recur)))))
 
+(letfn
+  [(f [] (h 1))
+   (h [] (f 1))])
+
 (defn- private-fn [])
 ;; redefining it...
 (defn- private-fn [])
@@ -63,7 +68,6 @@
 (t/deftest my-tests
   ;; you're not actually testing something here:
   (odd? (inc 1)))
-
 ")
 
 (defonce editor-ref (atom nil))
@@ -104,7 +108,7 @@
     {:on-click #(j/call @editor-ref :performLint)}
     "lint!"]
    [:button.btn.btn-sm.btn-outline-primary
-    {:on-click #(.setValue @editor-ref "")}
+    {:on-click #(.setValue @editor-ref "\n\n")}
     "clear!"]
    [:button.btn.btn-sm.btn-outline-primary
     {:on-click #(do (.setValue @editor-ref initial-code)
@@ -118,7 +122,7 @@
      [:span [:a {:href "https://github.com/borkdude/clj-kondo"
                  :target "_blank"}
              "clj-kondo"]
-      " playground"]]]
+      " clojure linter playground"]]]
    [:div
     [controls]
     [editor "code" [:code]]
@@ -143,7 +147,7 @@
                       (let [results
                             (into-array
                              (for [line (str/split-lines response)
-                                   :let [[_ file row col level message]
+                                   :let [[_ _file row col level message]
                                          (re-matches #"(.+):(\d+):(\d+): (\w+): (.*)" line)]
                                    :when message]
                                (let [[row col] [(js/parseInt row) (js/parseInt col)]

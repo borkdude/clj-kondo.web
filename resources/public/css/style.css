@@ -17,11 +17,8 @@ body {
   padding-bottom: 4rem;
 }
 
-.buttons {
-  margin: 5px;
-}
 .buttons .btn {
-  margin: 2px;
+  margin: 3px;
 }
 
 .footer {
@@ -37,5 +34,6 @@ body {
 
 .CodeMirror {
   border: 1px solid #eee;
+  margin: 8px 0 8px 0;
   height: auto;
 }
