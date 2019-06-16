@@ -17,6 +17,9 @@
   (:require [clojure.set])
   (:require [clojure.string :as str]))
 
+;; here we made a typo, so the symbol is unresolved:
+(but-last [1 2 3])
+
 ;; clj-kondo knows about arities of clojure namespaces, but you can also teach
 ;; it about your libraries or own namespaces
 (str/join)
