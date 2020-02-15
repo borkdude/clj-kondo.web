@@ -9,18 +9,19 @@
    [cljsjs.parinfer]
    [cljsjs.parinfer-codemirror]
    [clojure.string :as str]
-   [reagent.core :as r])
-  (:import [goog Uri]))
+   [reagent.core :as r]))
 
-(def initial-code "(ns foo
-  ;; we're never using this namespace:
-  (:require [clojure.set])
-  (:require [clojure.string :as str]))
+(def initial-code (str/trim "
+(ns foo
+  (:require
+    [clojure.string :as str]
+    ;; We're never using this namespace. Also, the namespaces aren't sorted.
+    [clojure.set :as set]))
 
-;; here we made a typo, so the symbol is unresolved:
+;; Here we made a typo, so the symbol is unresolved:
 (but-last [1 2 3])
 
-;; clj-kondo knows about arities of clojure namespaces, but you can also teach
+;; Clj-kondo knows about arities of clojure namespaces, but you can also teach
 ;; it about your libraries or own namespaces
 (str/join)
 
@@ -46,14 +47,18 @@
 ;; redefining it...
 (defn- private-fn [])
 
+(defn foo [] :foo)
+;; Type error, because foo doesn't return a number!
+(inc (foo))
+
 ;; I'm tired now, let's sleep...
 ;; Oops, not happening because of wrong amount of args:
 (Thread/sleep 1000 1 2)
 
-;; here we switch to another namespace and require the previous:
+;; Here we switch to another namespace and require the previous:
 (ns bar (:require [foo :as f]))
 
-;; wrong arity when calling a function from the previous namespace:
+;; Wrong arity when calling a function from the previous namespace:
 (f/foo-fn)
 
 ;; private:
@@ -71,7 +76,7 @@
 (t/deftest my-tests
   ;; you're not actually testing something here:
   (odd? (inc 1)))
-")
+"))
 
 (defonce editor-ref (atom nil))
 

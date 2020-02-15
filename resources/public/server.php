@@ -8,7 +8,7 @@ $tmp_clj = tempnam("/tmp", "cljc") . ".clj";
 file_put_contents($tmp_clj, $code_clj);
 ob_start();
 $clj_kondo_path=getenv('CLJ_KONDO_PATH');
-passthru("$clj_kondo_path --lint $tmp_clj $tmp_cljs --config '{:linters {:unresolved-symbol {:level :error}}}'");
+passthru("$clj_kondo_path --lint $tmp_clj $tmp_cljs --config '{:linters {:unresolved-symbol {:level :error} :unsorted-required-namespaces {:level :warning}}}'");
 $dat = ob_get_clean();
 echo $dat;
 unlink($tmp_clj);
